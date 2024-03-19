@@ -1,0 +1,47 @@
+python
+Copy code
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import svm, metrics
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_files
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Load data
+data_dir = "path_to_your_data_directory"
+categories = ['cat', 'dog']
+data = load_files(data_dir, categories=categories)
+
+# Convert images to feature vectors
+vectorizer = CountVectorizer(analyzer='word', decode_error='ignore')
+X = vectorizer.fit_transform(data.data)
+y = data.target
+
+# Split data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize SVM classifier
+classifier = svm.SVC(kernel='linear')
+
+# Train the classifier
+classifier.fit(X_train, y_train)
+
+# Make predictions
+y_pred = classifier.predict(X_test)
+
+# Evaluate the classifier
+print("Classification report:")
+print(metrics.classification_report(y_test, y_pred, target_names=categories))
+
+# Plot confusion matrix
+cm = metrics.confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6, 6))
+plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+plt.title('Confusion Matrix')
+plt.colorbar()
+tick_marks = np.arange(len(categories))
+plt.xticks(tick_marks, categories)
+plt.yticks(tick_marks, categories)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()
